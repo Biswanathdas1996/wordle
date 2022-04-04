@@ -9,6 +9,8 @@ type Props = {
   isRevealing?: boolean
   currentRowClassName: string
   answer?: any
+  onEnter?: any
+  length?: any
 }
 
 export const Grid = ({
@@ -17,6 +19,8 @@ export const Grid = ({
   isRevealing,
   currentRowClassName,
   answer,
+  onEnter,
+  length,
 }: Props) => {
   const empties =
     guesses.length < MAX_CHALLENGES - 1
@@ -26,18 +30,35 @@ export const Grid = ({
   return (
     <>
       {guesses.map((guess, i) => (
-        <CompletedRow
-          key={i}
-          guess={guess}
-          isRevealing={isRevealing && guesses.length - 1 === i}
-          answer={answer}
-        />
+        <>
+          <CompletedRow
+            key={i}
+            guess={guess}
+            isRevealing={isRevealing && guesses.length - 1 === i}
+            answer={answer}
+          />
+        </>
       ))}
       {guesses.length < MAX_CHALLENGES && (
-        <CurrentRow guess={currentGuess} className={currentRowClassName} />
+        <>
+          <CurrentRow
+            guess={currentGuess}
+            className={currentRowClassName}
+            length={length}
+          />
+          <div className="flex flex-column items-center justify-center py-3">
+            <button
+              className="px-4"
+              style={{ color: 'white', border: '1px solid white', padding: 15 }}
+              onClick={() => onEnter()}
+            >
+              Submit
+            </button>
+          </div>
+        </>
       )}
       {empties.map((_, i) => (
-        <EmptyRow key={i} />
+        <EmptyRow key={i} length={length} />
       ))}
     </>
   )

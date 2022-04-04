@@ -10,6 +10,7 @@ type Props = {
   guesses: string[]
   isRevealing?: boolean
   answer?: any
+  length?: any
 }
 
 export const Keyboard = ({
@@ -19,6 +20,7 @@ export const Keyboard = ({
   guesses,
   isRevealing,
   answer,
+  length,
 }: Props) => {
   const charStatuses = getStatuses(guesses, answer)
 
@@ -62,6 +64,7 @@ export const Keyboard = ({
             onClick={onClick}
             status={charStatuses[key]}
             isRevealing={isRevealing}
+            length={length}
           />
         ))}
       </div>
@@ -73,13 +76,14 @@ export const Keyboard = ({
             onClick={onClick}
             status={charStatuses[key]}
             isRevealing={isRevealing}
+            length={length}
           />
         ))}
       </div>
       <div className="flex justify-center">
-        {/* <Key width={65.4} value="ENTER" onClick={onClick}>
+        <Key width={65.4} value="ENTER" onClick={onClick}>
           Enter
-        </Key> */}
+        </Key>
         {['Z', 'X', 'C', 'V', 'B', 'N', 'M'].map((key) => (
           <Key
             value={key}
@@ -87,11 +91,12 @@ export const Keyboard = ({
             onClick={onClick}
             status={charStatuses[key]}
             isRevealing={isRevealing}
+            length={length}
           />
         ))}
-        {/* <Key width={65.4} value="DELETE" onClick={onClick}>
+        <Key width={65.4} value="DELETE" onClick={onClick}>
           Delete
-        </Key> */}
+        </Key>
       </div>
     </div>
   )

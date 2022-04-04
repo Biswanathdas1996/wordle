@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 
 export const convertTime = (unix_timestamp: any) => {
   // Create a new JavaScript Date object based on the timestamp
@@ -30,9 +31,18 @@ export const convertTime = (unix_timestamp: any) => {
 
 const Registration = () => {
   const [question, setQuestion] = useState<any[]>([])
+  let history = useNavigate()
 
   useEffect(() => {
-    fetchAllQuestion()
+    const session = sessionStorage.getItem('admin-session')
+
+    if (session === null) {
+      history('/admin')
+      return
+    } else {
+      fetchAllQuestion()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchAllQuestion = () => {
@@ -71,8 +81,8 @@ const Registration = () => {
   return (
     <>
       <Grid style={{ marginTop: 20 }} container>
-        <Grid item lg={3} md={3} sm={12} xs={12}></Grid>
-        <Grid item lg={6} md={6} sm={12} xs={12}>
+        <Grid item lg={2} md={2} sm={12} xs={12}></Grid>
+        <Grid item lg={8} md={8} sm={12} xs={12}>
           <Card>
             <Typography
               style={{ marginLeft: '15px', marginTop: '10px', padding: 3 }}
@@ -101,12 +111,7 @@ const Registration = () => {
                           >
                             Question
                           </th>
-                          <th
-                            scope="col"
-                            className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
-                          >
-                            Answer
-                          </th>
+
                           <th
                             scope="col"
                             className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
@@ -138,9 +143,7 @@ const Registration = () => {
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.question}
                                 </td>
-                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                  {data?.answer}
-                                </td>
+
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {convertTime(data?.start_time)}
                                 </td>
@@ -152,13 +155,16 @@ const Registration = () => {
                                     <b style={{ color: 'green' }}>
                                       Currently Active
                                     </b>
-                                  ) : (
+                                  ) : data?.status !== '2' ? (
                                     <button
                                       onClick={() => updateStatus(data?.id)}
+                                      disabled={data?.status === '2'}
                                       className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded "
                                     >
-                                      Active
+                                      Activate
                                     </button>
+                                  ) : (
+                                    <b style={{ color: 'red' }}>Finished</b>
                                   )}
                                 </td>
                               </tr>
@@ -172,7 +178,7 @@ const Registration = () => {
             </div>
           </Card>
         </Grid>
-        <Grid item lg={3} md={3} sm={12} xs={12}></Grid>
+        <Grid item lg={2} md={2} sm={12} xs={12}></Grid>
       </Grid>
     </>
   )
