@@ -82,8 +82,8 @@ const Registration = () => {
   return (
     <>
       <Grid style={{ marginTop: 20 }} container>
-        <Grid item lg={2} md={2} sm={12} xs={12}></Grid>
-        <Grid item lg={8} md={8} sm={12} xs={12}>
+        <Grid item lg={1} md={1} sm={12} xs={12}></Grid>
+        <Grid item lg={10} md={10} sm={12} xs={12}>
           <NavBar />
           <Card>
             <Typography
@@ -180,7 +180,7 @@ const Registration = () => {
             </div>
           </Card>
         </Grid>
-        <Grid item lg={2} md={2} sm={12} xs={12}></Grid>
+        <Grid item lg={1} md={1} sm={12} xs={12}></Grid>
       </Grid>
     </>
   )

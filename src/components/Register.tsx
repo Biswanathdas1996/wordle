@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { Card, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
 import swal from 'sweetalert'
+import Loader from './Loader'
 
 const VendorSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -13,12 +14,15 @@ const VendorSchema = Yup.object().shape({
 
 const Registration = () => {
   let history = useNavigate()
+  const [loader, setLoader] = useState(false)
 
   useEffect(() => {
-    localStorage.clear()
+    localStorage.removeItem('gameState')
+    localStorage.removeItem('gameStats')
   }, [])
 
   const saveData = (value: any) => {
+    setLoader(true)
     var formdata = new FormData()
     formdata.append('name', value?.name)
     formdata.append('contact_number', value?.number)
@@ -36,11 +40,13 @@ const Registration = () => {
 
         localStorage.setItem('userId', result?.id)
         localStorage.setItem('userName', result?.name)
+        setLoader(false)
         history('/question')
       })
       .catch((error) => {
         console.log('error', error)
         swal('An error occurred, Please try again')
+        setLoader(false)
       })
   }
 
@@ -112,12 +118,25 @@ const Registration = () => {
                     </div>
 
                     <span className="input-group-btn">
-                      <input
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        type="submit"
-                        value={'Enter in room'}
-                        style={{ marginTop: 20, color: 'black' }}
-                      />
+                      {loader ? (
+                        <Loader />
+                      ) : (
+                        <div
+                          className="flex justify-center items-center mt-4"
+                          style={{
+                            background: '#414141',
+                            padding: 10,
+                            color: 'white',
+                          }}
+                        >
+                          <input
+                            className="flex justify-center items-center  text-white font-bold py-2 px-4 rounded"
+                            type="submit"
+                            value={'Enter in room'}
+                            style={{ width: '100%' }}
+                          />
+                        </div>
+                      )}
                     </span>
                   </Form>
                 )}

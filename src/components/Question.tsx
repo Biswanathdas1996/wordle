@@ -18,12 +18,14 @@ import swal from 'sweetalert'
 import Countdown from 'react-countdown'
 import { useNavigate } from 'react-router-dom'
 import { differenceInSeconds } from 'date-fns'
+import Loader from './Loader'
 
 function Question() {
   const [currentGuess, setCurrentGuess] = useState('')
   const [isGameWon, setIsGameWon] = useState(false)
   const [currentRowClass, setCurrentRowClass] = useState('')
   const [isGameLost, setIsGameLost] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [isSuccessAttemptCompleted, setIsSuccessAttemptCompleted] =
     useState(false)
   const [question, setQuestion] = useState(null)
@@ -41,7 +43,7 @@ function Question() {
     }
   })
 
-  const user = localStorage.getItem('userName')
+  const user = localStorage.getItem('userId')
   if (!user) {
     history('/')
   }
@@ -69,6 +71,7 @@ function Question() {
   }
 
   const getCurrentActiveQuestion = async () => {
+    setLoader(true)
     var requestOptions: any = {
       method: 'GET',
       redirect: 'follow',
@@ -80,7 +83,8 @@ function Question() {
       .then((response) => response.json())
       .then(async (result) => {
         console.log(result)
-        await checkIfSuccessAttempt(result)
+        const ifSubmited: any = await checkIfSuccessAttempt()
+
         const currentQuestionId = localStorage.getItem('questionId')
         if (currentQuestionId && currentQuestionId !== result[0]?.id) {
           localStorage.removeItem('gameState')
@@ -88,26 +92,37 @@ function Question() {
           localStorage.removeItem('questionId')
           window.location.reload()
           return
+        } else {
+          localStorage.setItem('questionId', result[0]?.id)
         }
-        localStorage.setItem('questionId', result[0]?.id)
-        setQuestion(result[0]?.question)
-        setEndTime(result[0]?.end_time)
-        setStartTime(result[0]?.start_time)
-        const answer = result[0]?.answer
 
-        setAnswer(localeAwareUpperCase(answer))
+        if (ifSubmited !== 1) {
+          setQuestion(result[0]?.question)
+          setEndTime(result[0]?.end_time)
+          setStartTime(result[0]?.start_time)
+          const answer = result[0]?.answer
+
+          setAnswer(localeAwareUpperCase(answer))
+        } else {
+          setIsSuccessAttemptCompleted(true)
+        }
+        setLoader(false)
         return result[0]?.id
       })
-      .catch((error) => console.log('error', error))
+      .catch((error) => {
+        console.log('error', error)
+        setLoader(false)
+      })
     return result
   }
 
   useEffect(() => {
     getCurrentActiveQuestion()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function checkIfSuccessAttempt(result: any) {
+  function checkIfSuccessAttempt() {
     const userId: any = localStorage.getItem('userId')
     const questionId: any = localStorage.getItem('questionId')
     var formdata = new FormData()
@@ -120,16 +135,17 @@ function Question() {
       redirect: 'follow',
     }
 
-    fetch('http://sosal.in/API/config/checkSuccessAttempt.php', requestOptions)
+    const gatData = fetch(
+      'http://sosal.in/API/config/checkSuccessAttempt.php',
+      requestOptions
+    )
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
-        if (data === 1) {
-          setIsSuccessAttemptCompleted(true)
-        } else {
-        }
+        return data
       })
-      .catch((error) => console.log('error', error))
+      .catch((error) => 0)
+    return gatData
   }
 
   const insertEnrty = (guesses: any): any => {
@@ -259,12 +275,16 @@ function Question() {
             <p>Thank you for your participation!</p>
           </h5>
 
-          <button
-            onClick={() => nextQuestion()}
-            className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
-          >
-            Next Question
-          </button>
+          {loader ? (
+            <Loader />
+          ) : (
+            <button
+              onClick={() => nextQuestion()}
+              className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
+            >
+              Next Question
+            </button>
+          )}
         </div>
       )
     } else {
@@ -352,12 +372,16 @@ function Question() {
               You guess word correctly !
             </h5>
 
-            <button
-              onClick={() => nextQuestion()}
-              className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
-            >
-              Next Question
-            </button>
+            {loader ? (
+              <Loader />
+            ) : (
+              <button
+                onClick={() => nextQuestion()}
+                className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
+              >
+                Next Question
+              </button>
+            )}
           </div>
         </Gird2>
       )}
