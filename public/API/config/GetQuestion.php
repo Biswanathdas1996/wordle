@@ -1,15 +1,15 @@
 <?php
 include('query.php');
 
-     $datas=array(
-          "conditions"=>array(
-                             "status"=>1
-                        ),
-          "order"=>array(
-                        "id"=>'desc'
-                    )     
-     );
-    $get_data=select('questions',$datas);
+$datas = array(
+     "conditions" => array(
+          "status" => 1
+     ),
+     "order" => array(
+          "id" => 'desc'
+     )
+);
+$get_data = select('questions', $datas);
 
 echo json_encode($get_data);
 

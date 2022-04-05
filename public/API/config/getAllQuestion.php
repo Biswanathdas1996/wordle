@@ -1,7 +1,7 @@
 <?php
 include('query.php');
 
-    $get_data=select('questions');
+$get_data = select('questions');
 
 echo json_encode($get_data);
 
