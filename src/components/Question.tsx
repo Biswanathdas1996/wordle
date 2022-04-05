@@ -17,6 +17,7 @@ import { Grid as Gird2 } from '@mui/material'
 import swal from 'sweetalert'
 import Countdown from 'react-countdown'
 import { useNavigate } from 'react-router-dom'
+import { differenceInSeconds } from 'date-fns'
 
 function Question() {
   const [currentGuess, setCurrentGuess] = useState('')
@@ -27,6 +28,7 @@ function Question() {
     useState(false)
   const [question, setQuestion] = useState(null)
   const [endTime, setEndTime] = useState<any>('')
+  const [startTime, setStartTime] = useState<any>('')
   const [answer, setAnswer] = useState('')
   const [isRevealing, setIsRevealing] = useState(false)
   let history = useNavigate()
@@ -90,6 +92,7 @@ function Question() {
         localStorage.setItem('questionId', result[0]?.id)
         setQuestion(result[0]?.question)
         setEndTime(result[0]?.end_time)
+        setStartTime(result[0]?.start_time)
         const answer = result[0]?.answer
 
         setAnswer(localeAwareUpperCase(answer))
@@ -155,10 +158,14 @@ function Question() {
     const questionId: any = localStorage.getItem('questionId')
     const date = new Date()
     var formdata = new FormData()
+
+    const startDate = new Date(startTime * 1000)
+    const diff = differenceInSeconds(date.getTime(), Number(startDate))
+
     formdata.append('user_id', userId)
     formdata.append('question_id', questionId)
     formdata.append('correct_attempt', attempt?.toString())
-    formdata.append('time', date.getTime().toString())
+    formdata.append('time', diff.toString())
     formdata.append('attempt', JSON.stringify(guesses))
 
     var requestOptions: any = {
@@ -284,7 +291,6 @@ function Question() {
             isRevealing={isRevealing}
             currentRowClassName={currentRowClass}
             answer={answer}
-            onEnter={onEnter}
             length={answer.length}
           />
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { Card, Grid } from '@mui/material'
@@ -14,9 +14,11 @@ const VendorSchema = Yup.object().shape({
 const Registration = () => {
   let history = useNavigate()
 
-  const saveData = (value: any) => {
-    console.log(value)
+  useEffect(() => {
+    localStorage.clear()
+  }, [])
 
+  const saveData = (value: any) => {
     var formdata = new FormData()
     formdata.append('name', value?.name)
     formdata.append('contact_number', value?.number)
@@ -28,19 +30,18 @@ const Registration = () => {
     }
 
     fetch('http://sosal.in/API/config/Register.php', requestOptions)
-      .then((response) => response.text())
+      .then((response) => response.json())
       .then((result) => {
         console.log(result)
 
-        swal('Success!', 'You have successfully registered!', 'success').then(
-          (evt) => {
-            localStorage.setItem('userId', result)
-            localStorage.setItem('userName', value?.name)
-            history('/question')
-          }
-        )
+        localStorage.setItem('userId', result?.id)
+        localStorage.setItem('userName', result?.name)
+        history('/question')
       })
-      .catch((error) => console.log('error', error))
+      .catch((error) => {
+        console.log('error', error)
+        swal('An error occurred, Please try again')
+      })
   }
 
   return (
@@ -114,7 +115,7 @@ const Registration = () => {
                       <input
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         type="submit"
-                        value={'Sign up'}
+                        value={'Enter in room'}
                         style={{ marginTop: 20, color: 'black' }}
                       />
                     </span>

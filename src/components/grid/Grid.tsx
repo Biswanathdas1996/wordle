@@ -9,7 +9,6 @@ type Props = {
   isRevealing?: boolean
   currentRowClassName: string
   answer?: any
-  onEnter?: any
   length?: any
 }
 
@@ -19,7 +18,6 @@ export const Grid = ({
   isRevealing,
   currentRowClassName,
   answer,
-  onEnter,
   length,
 }: Props) => {
   const empties =
@@ -40,22 +38,11 @@ export const Grid = ({
         </>
       ))}
       {guesses.length < MAX_CHALLENGES && (
-        <>
-          <CurrentRow
-            guess={currentGuess}
-            className={currentRowClassName}
-            length={length}
-          />
-          <div className="flex flex-column items-center justify-center py-3">
-            <button
-              className="px-4"
-              style={{ color: 'white', border: '1px solid white', padding: 15 }}
-              onClick={() => onEnter()}
-            >
-              Submit
-            </button>
-          </div>
-        </>
+        <CurrentRow
+          guess={currentGuess}
+          className={currentRowClassName}
+          length={length}
+        />
       )}
       {empties.map((_, i) => (
         <EmptyRow key={i} length={length} />

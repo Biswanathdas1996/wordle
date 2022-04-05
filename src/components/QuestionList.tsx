@@ -3,6 +3,7 @@ import { Card, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
 
+import NavBar from './AdminNavigation'
 export const convertTime = (unix_timestamp: any) => {
   // Create a new JavaScript Date object based on the timestamp
   // multiplied by 1000 so that the argument is in milliseconds, not seconds.
@@ -83,6 +84,7 @@ const Registration = () => {
       <Grid style={{ marginTop: 20 }} container>
         <Grid item lg={2} md={2} sm={12} xs={12}></Grid>
         <Grid item lg={8} md={8} sm={12} xs={12}>
+          <NavBar />
           <Card>
             <Typography
               style={{ marginLeft: '15px', marginTop: '10px', padding: 3 }}
