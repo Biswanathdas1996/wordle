@@ -4,6 +4,8 @@ import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import NavBar from './AdminNavigation'
+import swal from 'sweetalert'
+import Countdown from 'react-countdown'
 
 export const convertTime = (unix_timestamp: any) => {
   // Create a new JavaScript Date object based on the timestamp
@@ -93,6 +95,28 @@ const Registration = () => {
       })
       .catch((error) => console.log('error', error))
   }
+  const showAnswer = (ans: any) => {
+    swal(ans)
+  }
+
+  const renderer = ({ hours, minutes, seconds, completed }: any) => {
+    if (completed) {
+      // Render a completed state
+      return (
+        <h4 className="text-base leading-tight text-red-600 ">Times up!</h4>
+      )
+    } else {
+      // Render a countdown
+      return (
+        <>
+          <h4 className="text-base leading-tight text-dark ">
+            <small>Time Remaining:</small> {minutes} <small>Minutes</small> -{' '}
+            {seconds} <small> Seconds</small>
+          </h4>
+        </>
+      )
+    }
+  }
 
   return (
     <>
@@ -158,7 +182,7 @@ const Registration = () => {
                             scope="col"
                             className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                           >
-                            <small>Currect attempt / User participating</small>
+                            <small>Correct Answer / Total Participants</small>
                           </th>
                         </tr>
                       </thead>
@@ -172,6 +196,12 @@ const Registration = () => {
                                 </td>
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.question}
+                                  <button
+                                    onClick={() => showAnswer(data?.answer)}
+                                    className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded mt-2"
+                                  >
+                                    View Answer
+                                  </button>
                                 </td>
 
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
@@ -184,6 +214,10 @@ const Registration = () => {
                                   {data?.status === '1' ? (
                                     <b style={{ color: 'green' }}>
                                       Currently Active
+                                      <Countdown
+                                        date={new Date(data?.end_time * 1000)}
+                                        renderer={renderer}
+                                      />
                                     </b>
                                   ) : data?.status !== '2' ? (
                                     <button

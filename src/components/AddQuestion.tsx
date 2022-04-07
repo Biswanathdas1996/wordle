@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { Card, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import { useNavigate } from 'react-router-dom'
+
 import swal from 'sweetalert'
 import Loader from './Loader'
 import NavBar from './AdminNavigation'
@@ -15,17 +15,10 @@ const VendorSchema = Yup.object().shape({
 })
 
 const AddQuestion = () => {
-  let history = useNavigate()
   const [loader, setLoader] = useState(false)
   const [session, setSession] = useState([])
 
   useEffect(() => {
-    const session = sessionStorage.getItem('admin-session')
-
-    if (session === null) {
-      history('/admin')
-      return
-    }
     getAllSession()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -47,7 +40,7 @@ const AddQuestion = () => {
       .then((response) => response.json())
       .then((result) => {
         console.log(result)
-        history('/question-list')
+        swal('Question added')
       })
       .catch((error) => {
         console.log('error', error)
