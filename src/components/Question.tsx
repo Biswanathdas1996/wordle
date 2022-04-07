@@ -18,7 +18,8 @@ import swal from 'sweetalert'
 import Countdown from 'react-countdown'
 import { useNavigate } from 'react-router-dom'
 import { differenceInSeconds } from 'date-fns'
-import Loader from './Loader'
+import Waiting from './Waiting'
+import LogoutIcon from '@mui/icons-material/Logout'
 
 function Question() {
   const [currentGuess, setCurrentGuess] = useState('')
@@ -43,8 +44,10 @@ function Question() {
     }
   })
 
-  const user = localStorage.getItem('userId')
-  if (!user) {
+  const userId = localStorage.getItem('userId')
+  const user = localStorage.getItem('userName')
+  const sessionName = localStorage.getItem('sessionName')
+  if (!userId) {
     history('/')
   }
   const [stats, setStats] = useState(() => loadStats())
@@ -61,6 +64,7 @@ function Question() {
       !isGameWon
     ) {
       setCurrentGuess(`${currentGuess}${value}`)
+    } else {
     }
   }
 
@@ -72,17 +76,24 @@ function Question() {
 
   const getCurrentActiveQuestion = async () => {
     setLoader(true)
+
+    var formdata = new FormData()
+    const sessionId: any = localStorage.getItem('sessionId')
+    formdata.append('session_id', sessionId)
+
     var requestOptions: any = {
-      method: 'GET',
+      method: 'POST',
+      body: formdata,
       redirect: 'follow',
     }
-    const result = await fetch(
+
+    const result = fetch(
       'http://sosal.in/API/config/GetQuestion.php',
       requestOptions
     )
       .then((response) => response.json())
       .then(async (result) => {
-        console.log(result)
+        //console.log(result)
         const ifSubmited: any = await checkIfSuccessAttempt()
 
         const currentQuestionId = localStorage.getItem('questionId')
@@ -110,21 +121,25 @@ function Question() {
         return result[0]?.id
       })
       .catch((error) => {
-        console.log('error', error)
+        //console.log('error', error)
         setLoader(false)
       })
+
     return result
   }
 
   useEffect(() => {
     getCurrentActiveQuestion()
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function checkIfSuccessAttempt() {
     const userId: any = localStorage.getItem('userId')
     const questionId: any = localStorage.getItem('questionId')
+    if (!questionId || !userId) {
+      // window.location.reload()
+      return
+    }
     var formdata = new FormData()
     formdata.append('user_id', userId)
     formdata.append('question_id', questionId)
@@ -142,7 +157,11 @@ function Question() {
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
-        return data
+
+        // setGuesses(JSON.parse(data?.data))
+        // setAnswer(data?.answer)
+
+        return data?.status
       })
       .catch((error) => 0)
     return gatData
@@ -151,10 +170,12 @@ function Question() {
   const insertEnrty = (guesses: any): any => {
     const userId: any = localStorage.getItem('userId')
     const questionId: any = localStorage.getItem('questionId')
+    const sessionId: any = localStorage.getItem('sessionId')
 
     var formdata = new FormData()
     formdata.append('user_id', userId)
     formdata.append('question_id', questionId)
+    formdata.append('session_id', sessionId)
     formdata.append('attempt', JSON.stringify(guesses))
 
     var requestOptions: any = {
@@ -172,12 +193,14 @@ function Question() {
   function correctAttempt(guesses: any, attempt: any) {
     const userId: any = localStorage.getItem('userId')
     const questionId: any = localStorage.getItem('questionId')
+    const sessionId: any = localStorage.getItem('sessionId')
+
     const date = new Date()
     var formdata = new FormData()
 
     const startDate = new Date(startTime * 1000)
     const diff = differenceInSeconds(date.getTime(), Number(startDate))
-
+    formdata.append('session_id', sessionId)
     formdata.append('user_id', userId)
     formdata.append('question_id', questionId)
     formdata.append('correct_attempt', attempt?.toString())
@@ -193,9 +216,14 @@ function Question() {
     fetch('http://sosal.in/API/config/correctAttempt.php', requestOptions)
       .then((response) => response.text())
       .then((result) => {
-        console.log(result)
-        swal('Success!', 'you have successfully completed the test', 'success')
-        setIsSuccessAttemptCompleted(true)
+        //console.log(result)
+        if (guesses?.length < MAX_CHALLENGES) {
+          setIsSuccessAttemptCompleted(true)
+        } else {
+          setTimeout(() => {
+            setIsSuccessAttemptCompleted(true)
+          }, 1000)
+        }
       })
       .catch((error) => console.log('error', error))
   }
@@ -262,46 +290,28 @@ function Question() {
     if (completed) {
       // Render a completed state
       return (
-        <div
-          className="flex flex-column items-center justify-center"
-          style={{
-            border: '1px solid white',
-            padding: 20,
-            textAlign: 'center',
-          }}
-        >
-          <h5 className="font-medium leading-tight text-xl mt-0 mb-2 text-lime-50">
-            Times up !!
-            <p>Thank you for your participation!</p>
-          </h5>
-
-          {loader ? (
-            <Loader />
-          ) : (
-            <button
-              onClick={() => nextQuestion()}
-              className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
-            >
-              Next Question
-            </button>
-          )}
-        </div>
+        <Waiting
+          heading="Times up !!"
+          body="Thank you for your participation!. Please wait for the next question."
+          nextQuestion={nextQuestion}
+          loader={loader}
+        />
       )
     } else {
       // Render a countdown
       return (
         <>
           <div
+            className="flex justify-center items-center m-1"
             style={{
               border: '1px solid white',
-              padding: 10,
+              padding: 5,
               textAlign: 'center',
             }}
           >
-            <h4 className="font-medium leading-tight  text-2xl mt-0 mb-2 text-lime-50 ">
-              <small>Time Remaining: </small> {hours} <small>Hours</small> -{' '}
-              {minutes} <small>Minutes</small> - {seconds}{' '}
-              <small> Seconds</small>
+            <h4 className="text-base leading-tight text-white ">
+              <small>Time Remaining:</small> {minutes} <small>Minutes</small> -{' '}
+              {seconds} <small> Seconds</small>
             </h4>
           </div>
           <br />
@@ -334,55 +344,95 @@ function Question() {
     }
   }
 
+  const logout = () => {
+    swal({
+      title: 'Are you sure?',
+      text: 'You want to logout !',
+      icon: 'warning',
+
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        localStorage.clear()
+        history('/')
+      }
+    })
+  }
   return (
     <Gird2 style={{ marginTop: 20 }} container>
-      <Gird2 item lg={12} md={12} sm={12} xs={12}>
-        <div className="flex flex-column items-center justify-center">
-          <h4 className="font-medium leading-tight  text-2xl mt-0 mb-4 text-lime-50 float-right">
-            Welcome {user}
+      <Gird2
+        item
+        lg={12}
+        md={12}
+        sm={12}
+        xs={12}
+        className="mb-3 flex flex-column"
+      >
+        <div
+          className=""
+          style={{
+            background: 'grey',
+            padding: 10,
+            top: 0,
+            position: 'absolute',
+            width: '100%',
+          }}
+        >
+          <h4 className=" font-medium leading-tight  text-base mt-0 text-lime-50 float-left">
+            <div>
+              {' '}
+              {/* <small>Welcome</small> {user} to */}
+              <b> {sessionName}</b>
+            </div>
+          </h4>
+          <h4 className=" font-medium leading-tight  text-base mt-0 text-lime-50 float-right">
+            <div onClick={() => logout()} style={{ cursor: 'pointer' }}>
+              <LogoutIcon />
+            </div>
           </h4>
         </div>
+        <button
+          onClick={() => history('/choose-session')}
+          className="flex items-center justify-left bg-dark text-slate-50 font-bold p-2 rounded mt-3"
+        >
+          Back
+        </button>
       </Gird2>
 
       <Gird2 item lg={3} md={3} sm={12} xs={12}></Gird2>
       {answer !== '' && !isSuccessAttemptCompleted && (
         <Gird2 item lg={6} md={6} sm={12} xs={12}>
-          <h5 className="font-medium leading-tight text-xl mt-0 mb-2 text-lime-50 py-6">
-            Question: <b>{question}</b>
-          </h5>
-
-          <Countdown date={new Date(endTime * 1000)} renderer={renderer} />
+          <div className="flex justify-center items-center">
+            <h5 className="font-medium leading-tight text-lg mt-0 text-white py-3 px-1">
+              {question}
+            </h5>
+          </div>
+          {guesses?.length < MAX_CHALLENGES && !isSuccessAttemptCompleted ? (
+            <Countdown date={new Date(endTime * 1000)} renderer={renderer} />
+          ) : (
+            <Gird2 item lg={12} md={12} sm={12} xs={12}>
+              <Waiting
+                heading="Ran out of options!"
+                body="Please wait for the next question."
+                nextQuestion={nextQuestion}
+                loader={loader}
+              />
+            </Gird2>
+          )}
         </Gird2>
       )}
 
       {isSuccessAttemptCompleted && (
         <Gird2 item lg={6} md={6} sm={12} xs={12}>
-          <div
-            className="flex flex-column items-center justify-center"
-            style={{
-              border: '1px solid white',
-              padding: 20,
-              textAlign: 'center',
-            }}
-          >
-            <h3 className="font-medium leading-tight text-xl mt-0 mb-2 text-lime-50">
-              Nice !!
-            </h3>
-            <h5 className="font-medium leading-tight text-xl mt-0 mb-4 text-lime-50">
-              You guess word correctly !
-            </h5>
-
-            {loader ? (
-              <Loader />
-            ) : (
-              <button
-                onClick={() => nextQuestion()}
-                className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-4 rounded "
-              >
-                Next Question
-              </button>
-            )}
-          </div>
+          <Waiting
+            heading="Great Job!"
+            body={
+              guesses?.length !== 0 &&
+              `You got it right in ${guesses?.length} attempt(s)`
+            }
+            nextQuestion={nextQuestion}
+            loader={loader}
+          />
         </Gird2>
       )}
 

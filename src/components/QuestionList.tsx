@@ -47,12 +47,17 @@ const Registration = () => {
   }, [])
 
   const fetchAllQuestion = () => {
+    const session_id = sessionStorage.getItem('session_id')
+
     var requestOptions: any = {
       method: 'GET',
       redirect: 'follow',
     }
 
-    fetch('http://sosal.in/API/config/getAllQuestion.php', requestOptions)
+    fetch(
+      `http://sosal.in/API/config/getAllQuestion.php?session_id=${session_id}`,
+      requestOptions
+    )
       .then((response) => response.json())
       .then((result) => {
         console.log(result)
@@ -60,10 +65,11 @@ const Registration = () => {
       })
       .catch((error) => console.log('error', error))
   }
-  const updateStatus = (id: any) => {
+  const updateStatus = (id: any, session_id: any) => {
     const formdata = new FormData()
     console.log(id)
     formdata.append('id', id)
+    formdata.append('session_id', session_id)
 
     var requestOptions: any = {
       method: 'POST',
@@ -81,11 +87,10 @@ const Registration = () => {
 
   return (
     <>
+      <NavBar />
       <Grid style={{ marginTop: 20 }} container>
-        <Grid item lg={1} md={1} sm={12} xs={12}></Grid>
-        <Grid item lg={10} md={10} sm={12} xs={12}>
-          <NavBar />
-          <Card>
+        <Grid item lg={12} md={12} sm={12} xs={12}>
+          <Card className="mx-4">
             <Typography
               style={{ marginLeft: '15px', marginTop: '10px', padding: 3 }}
               component="h1"
@@ -147,10 +152,10 @@ const Registration = () => {
                                 </td>
 
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                  {convertTime(data?.start_time)}
+                                  {data?.new_start_time}
                                 </td>
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                  {convertTime(data?.end_time)}
+                                  {data?.new_end_time}
                                 </td>
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.status === '1' ? (
@@ -159,7 +164,9 @@ const Registration = () => {
                                     </b>
                                   ) : data?.status !== '2' ? (
                                     <button
-                                      onClick={() => updateStatus(data?.id)}
+                                      onClick={() =>
+                                        updateStatus(data?.id, data?.session_id)
+                                      }
                                       disabled={data?.status === '2'}
                                       className="flex items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 rounded "
                                     >
@@ -180,7 +187,6 @@ const Registration = () => {
             </div>
           </Card>
         </Grid>
-        <Grid item lg={1} md={1} sm={12} xs={12}></Grid>
       </Grid>
     </>
   )

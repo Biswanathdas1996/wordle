@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { Card, Grid } from '@mui/material'
@@ -8,6 +8,7 @@ import swal from 'sweetalert'
 
 const VendorSchema = Yup.object().shape({
   number: Yup.string().required('Password is required'),
+  session: Yup.string().required('Contact Number is required'),
 })
 
 const makeid = (length: any) => {
@@ -23,6 +24,7 @@ const makeid = (length: any) => {
 
 const Registration = () => {
   let history = useNavigate()
+  const [session, setSession] = useState([])
 
   const saveData = (value: any) => {
     console.log(value)
@@ -41,10 +43,31 @@ const Registration = () => {
       .then((result) => {
         if (result === 1) {
           sessionStorage.setItem('admin-session', makeid(10))
+          sessionStorage.setItem('session_id', value.session)
+
           history('/question-list')
         } else {
           swal('Please check the password')
         }
+      })
+      .catch((error) => console.log('error', error))
+  }
+
+  useEffect(() => {
+    getAllSession()
+  }, [])
+
+  const getAllSession = () => {
+    var requestOptions: any = {
+      method: 'GET',
+      redirect: 'follow',
+    }
+
+    fetch('http://sosal.in/API/config/getAllSession.php', requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        setSession(result)
+        sessionStorage.setItem('allSession', JSON.stringify(result))
       })
       .catch((error) => console.log('error', error))
   }
@@ -69,6 +92,7 @@ const Registration = () => {
               <Formik
                 initialValues={{
                   number: '',
+                  session: '',
                 }}
                 validationSchema={VendorSchema}
                 onSubmit={(values, { setSubmitting }) => {
@@ -78,6 +102,27 @@ const Registration = () => {
               >
                 {({ touched, errors, isSubmitting }) => (
                   <Form>
+                    <div className="form-group mb-2">
+                      <label htmlFor="name">Choose Session</label>
+                      <Field
+                        as="select"
+                        name="session"
+                        className={`form-control text-muted `}
+                      >
+                        <option key={0}>--Choose session--</option>
+                        {session?.map((data: any, index: number) => (
+                          <option value={data.id} key={index} id={data.id}>
+                            {data.session_name}
+                          </option>
+                        ))}
+                      </Field>
+
+                      <ErrorMessage
+                        component="div"
+                        name="session"
+                        className="invalid-feedback"
+                      />
+                    </div>
                     <div className="form-group">
                       <label htmlFor="name">Password</label>
                       <Field

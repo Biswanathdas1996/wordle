@@ -8,26 +8,23 @@ import swal from 'sweetalert'
 import Loader from './Loader'
 
 const VendorSchema = Yup.object().shape({
-  name: Yup.string().required('Name is required'),
   number: Yup.string().required('Contact Number is required'),
 })
 
 const Registration = () => {
   let history = useNavigate()
   const [loader, setLoader] = useState(false)
-  const [session, setSession] = useState([])
 
   useEffect(() => {
     localStorage.removeItem('gameState')
     localStorage.removeItem('gameStats')
     localStorage.removeItem('sessionId')
-    getAllSession()
   }, [])
 
   const saveData = (value: any) => {
     setLoader(true)
     var formdata = new FormData()
-    formdata.append('name', value?.name)
+
     formdata.append('contact_number', value?.number)
 
     var requestOptions: any = {
@@ -36,14 +33,22 @@ const Registration = () => {
       redirect: 'follow',
     }
 
-    fetch('http://sosal.in/API/config/Register.php', requestOptions)
+    fetch('http://sosal.in/API/config/Login.php', requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        localStorage.setItem('userId', result?.id)
-        localStorage.setItem('userName', result?.name)
+        console.log(result)
 
-        setLoader(false)
-        history('/choose-session')
+        if (result) {
+          localStorage.setItem('userId', result?.id)
+          localStorage.setItem('userName', result?.name)
+
+          setLoader(false)
+          history('/choose-session')
+        } else {
+          swal('Please check the details')
+          setLoader(false)
+        }
+
         // history('/question')
       })
       .catch((error) => {
@@ -67,31 +72,18 @@ const Registration = () => {
     })
   }
 
-  const getAllSession = () => {
-    var requestOptions: any = {
-      method: 'GET',
-      redirect: 'follow',
-    }
-
-    fetch('http://sosal.in/API/config/getAllSession.php', requestOptions)
-      .then((response) => response.json())
-      .then((result) => setSession(result))
-      .catch((error) => console.log('error', error))
-  }
-  console.log(session)
-
   return (
     <>
       <Grid style={{ marginTop: 20 }} container>
         <Grid item lg={3} md={3} sm={12} xs={12}></Grid>
         <Grid item lg={6} md={6} sm={12} xs={12}>
-          <Card className="m-4 p-1">
+          <Card className="m-4">
             <Typography
               style={{ marginLeft: '15px', marginTop: '10px', padding: 3 }}
               component="h1"
               variant="h5"
             >
-              Registration
+              Login
             </Typography>
             <div
               className="p-8 h-full"
@@ -99,7 +91,6 @@ const Registration = () => {
             >
               <Formik
                 initialValues={{
-                  name: '',
                   number: '',
                 }}
                 validationSchema={VendorSchema}
@@ -110,23 +101,6 @@ const Registration = () => {
               >
                 {({ touched, errors, isSubmitting }) => (
                   <Form>
-                    <div className="form-group">
-                      <Field
-                        type="text"
-                        name="name"
-                        autoComplete="flase"
-                        placeholder="Full name"
-                        className={`form-control text-muted ${
-                          touched.name && errors.name ? 'is-invalid' : ''
-                        }`}
-                      />
-
-                      <ErrorMessage
-                        component="div"
-                        name="name"
-                        className="invalid-feedback"
-                      />
-                    </div>
                     <div className="form-group mt-2">
                       <Field
                         type="number"
@@ -160,7 +134,7 @@ const Registration = () => {
                           <input
                             className="flex justify-center items-center  text-white font-bold py-2 px-4 rounded"
                             type="submit"
-                            value={'Enter in room'}
+                            value={'Lets Begin'}
                             style={{ width: '100%' }}
                           />
                         </div>
@@ -169,13 +143,12 @@ const Registration = () => {
                   </Form>
                 )}
               </Formik>
-
               <p
-                onClick={() => history('/login')}
+                onClick={() => history('/')}
                 style={{ float: 'left' }}
                 className="mt-2 p-2 text-xl"
               >
-                Log in
+                Register
               </p>
               <p
                 onClick={() => reset()}
