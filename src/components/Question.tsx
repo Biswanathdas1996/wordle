@@ -45,7 +45,6 @@ function Question() {
   })
 
   const userId = localStorage.getItem('userId')
-  const user = localStorage.getItem('userName')
   const sessionName = localStorage.getItem('sessionName')
   if (!userId) {
     history('/')

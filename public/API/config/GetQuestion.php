@@ -1,17 +1,30 @@
 <?php
 include('query.php');
 
-$datas = array(
-     "conditions" => array(
-          "status" => 1
-     ),
-     "order" => array(
-          "id" => 'desc'
-     )
-);
-$get_data = select('questions', $datas);
 
-echo json_encode($get_data);
+
+
+ if($_POST){
+     $datas=array(
+          "conditions"=>array(
+                             "status"=>1,
+                             "session_id"=>$_POST["session_id"]
+                        ),
+          "order"=>array(
+                        "id"=>'desc'
+                    )     
+     );
+    $get_data=select('questions',$datas);
+
+echo json_encode($get_data); 
+ }
+   
+
+
+
+
+
+     
 
 
 header("Access-Control-Allow-Origin: *");

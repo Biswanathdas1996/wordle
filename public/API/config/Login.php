@@ -5,31 +5,14 @@ $datas=$_POST;
 
 
  if($_POST){
-     
     $get_user=select('users', array(
           "conditions"=>array(
                             "contact_number"=>$_POST['contact_number'],
                             
                         )    
         )); 
-     $data =[];
-     if(!$get_user){
-         $data=array(
-        "data"=>array(
-                "name"=>$_POST['name'],
-                "contact_number"=>$_POST['contact_number'],
-                
-            )
-        );
-        $insert_data = insert('users',$data);
-        $data = [
-                "name"=>$_POST['name'],
-                "id" =>$insert_data,
-                
-                ];
-        
-        
-     }else{
+     $data =null;
+     if($get_user){
           $data = [
                 "name"=>$get_user[0]['name'],
                 "id" =>$get_user[0]['id'],
