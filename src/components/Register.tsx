@@ -160,7 +160,7 @@ const Registration = () => {
                           <input
                             className="flex justify-center items-center  text-white font-bold py-2 px-4 rounded"
                             type="submit"
-                            value={'Enter in room'}
+                            value={'Lets Begin'}
                             style={{ width: '100%' }}
                           />
                         </div>

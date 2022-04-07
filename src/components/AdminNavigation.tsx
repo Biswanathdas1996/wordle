@@ -1,25 +1,35 @@
 import React from 'react'
-
+import LogoutIcon from '@mui/icons-material/Logout'
 import { useNavigate } from 'react-router-dom'
+import swal from 'sweetalert'
+
 const Nav = () => {
   let history = useNavigate()
-
-  const logOut = () => {
-    sessionStorage.clear()
-    history('/admin')
-    return
-  }
 
   const session_id: any = sessionStorage.getItem('session_id')
   const allSessionString: any = sessionStorage.getItem('allSession')
   const allSession = JSON.parse(allSessionString)
   const currentSession = allSession.find((data: any) => data?.id === session_id)
 
+  const logout = () => {
+    swal({
+      title: 'Are you sure?',
+      text: 'You want to logout !',
+      icon: 'warning',
+
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        sessionStorage.clear()
+        history('/admin')
+        return
+      }
+    })
+  }
   // allSession
   return (
     <>
       <div
-        className="flex flex-column items-center justify-center"
         style={{
           background: 'grey',
           padding: 10,
@@ -28,8 +38,14 @@ const Nav = () => {
           width: '100%',
         }}
       >
-        <h4 className=" font-medium leading-tight  text-2xl mt-0 text-lime-50 float-right">
+        <h4 className=" font-medium leading-tight  text-2xl mt-0 text-lime-50 float-left">
           {currentSession?.session_name}
+        </h4>
+
+        <h4 className=" font-medium leading-tight  text-base mt-0 text-lime-50 float-right">
+          <div onClick={() => logout()} style={{ cursor: 'pointer' }}>
+            <LogoutIcon />
+          </div>
         </h4>
       </div>
 
@@ -76,20 +92,6 @@ const Nav = () => {
             style={{ width: '100%' }}
           >
             Leader Board
-          </button>
-        </div>
-        <div
-          className="flex justify-center items-center my-4 mr-2 p-0"
-          style={{
-            background: 'white',
-          }}
-        >
-          <button
-            onClick={() => logOut()}
-            className="flex items-center justify-center  text-dark font-bold p-2 rounded mr-2 float-right"
-            style={{ width: '100%' }}
-          >
-            Log Out
           </button>
         </div>
       </div>

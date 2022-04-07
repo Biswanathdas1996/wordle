@@ -99,13 +99,19 @@ const LeaderBoard = () => {
                                 key={key}
                               >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  <b style={{ fontSize: sizeText }}>
-                                    {[0, 1, 2].includes(key) && (
-                                      <EmojiEventsIcon
-                                        className="mr-2"
-                                        style={{ fontSize: size }}
-                                      />
-                                    )}{' '}
+                                  {[0, 1, 2].includes(key) && (
+                                    <EmojiEventsIcon
+                                      className="mr-2"
+                                      style={{ fontSize: size }}
+                                    />
+                                  )}{' '}
+                                  <b
+                                    style={
+                                      [0, 1, 2].includes(key)
+                                        ? { fontSize: sizeText }
+                                        : { fontSize: 15 }
+                                    }
+                                  >
                                     {key + 1}
                                   </b>
                                 </td>

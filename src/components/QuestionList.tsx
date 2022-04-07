@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Card, Grid } from '@mui/material'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
-
+import RefreshIcon from '@mui/icons-material/Refresh'
 import NavBar from './AdminNavigation'
+
 export const convertTime = (unix_timestamp: any) => {
   // Create a new JavaScript Date object based on the timestamp
   // multiplied by 1000 so that the argument is in milliseconds, not seconds.
@@ -31,6 +32,8 @@ export const convertTime = (unix_timestamp: any) => {
 }
 
 const Registration = () => {
+  const [loading, setLoading] = useState(false)
+
   const [question, setQuestion] = useState<any[]>([])
   let history = useNavigate()
 
@@ -47,6 +50,7 @@ const Registration = () => {
   }, [])
 
   const fetchAllQuestion = () => {
+    setLoading(true)
     const session_id = sessionStorage.getItem('session_id')
 
     var requestOptions: any = {
@@ -60,10 +64,15 @@ const Registration = () => {
     )
       .then((response) => response.json())
       .then((result) => {
-        console.log(result)
+        console.log('------>', result)
         setQuestion(result)
+        setLoading(false)
       })
-      .catch((error) => console.log('error', error))
+      .catch((error) => {
+        console.log('error', error)
+
+        setLoading(false)
+      })
   }
   const updateStatus = (id: any, session_id: any) => {
     const formdata = new FormData()
@@ -97,9 +106,17 @@ const Registration = () => {
               variant="h5"
             >
               Questions
+              <button
+                onClick={() => fetchAllQuestion()}
+                className=" bg-blue-500 hover:bg-blue-700 text-white  p-1 mr-2 rounded "
+                style={{ float: 'right' }}
+                title="Refresh Question"
+              >
+                {loading ? 'Please wait...' : <RefreshIcon />}
+              </button>
             </Typography>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col mt-4">
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="overflow-hidden">
@@ -137,6 +154,12 @@ const Registration = () => {
                           >
                             Status
                           </th>
+                          <th
+                            scope="col"
+                            className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                          >
+                            <small>Currect attempt / User participating</small>
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -145,7 +168,7 @@ const Registration = () => {
                             return (
                               <tr className="bg-gray-100 border-b" key={key}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {data?.id}
+                                  {key + 1}
                                 </td>
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.question}
@@ -175,6 +198,9 @@ const Registration = () => {
                                   ) : (
                                     <b style={{ color: 'red' }}>Finished</b>
                                   )}
+                                </td>
+                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                  {data?.corect_ans} / {data?.total_user}
                                 </td>
                               </tr>
                             )

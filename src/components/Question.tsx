@@ -27,6 +27,7 @@ function Question() {
   const [currentRowClass, setCurrentRowClass] = useState('')
   const [isGameLost, setIsGameLost] = useState(false)
   const [loader, setLoader] = useState(false)
+  const [noQuestion, setNoQuestion] = useState(false)
   const [isSuccessAttemptCompleted, setIsSuccessAttemptCompleted] =
     useState(false)
   const [question, setQuestion] = useState(null)
@@ -92,7 +93,14 @@ function Question() {
     )
       .then((response) => response.json())
       .then(async (result) => {
-        //console.log(result)
+        console.log('--------->', result)
+        if (result && result?.length === 0) {
+          setNoQuestion(true)
+          // swal('No Question is available')
+          // history('/choose-session')
+          // return
+        }
+
         const ifSubmited: any = await checkIfSuccessAttempt()
 
         const currentQuestionId = localStorage.getItem('questionId')
@@ -217,11 +225,11 @@ function Question() {
       .then((result) => {
         //console.log(result)
         if (guesses?.length < MAX_CHALLENGES) {
-          setIsSuccessAttemptCompleted(true)
-        } else {
           setTimeout(() => {
             setIsSuccessAttemptCompleted(true)
-          }, 1000)
+          }, 2000)
+        } else {
+          setIsSuccessAttemptCompleted(true)
         }
       })
       .catch((error) => console.log('error', error))
@@ -420,7 +428,16 @@ function Question() {
           )}
         </Gird2>
       )}
-
+      {noQuestion && (
+        <Gird2 item lg={6} md={6} sm={12} xs={12}>
+          <Waiting
+            heading="No active question"
+            body={`Please wait for the next question.`}
+            nextQuestion={nextQuestion}
+            loader={loader}
+          />
+        </Gird2>
+      )}
       {isSuccessAttemptCompleted && (
         <Gird2 item lg={6} md={6} sm={12} xs={12}>
           <Waiting
