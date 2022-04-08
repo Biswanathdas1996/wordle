@@ -7,9 +7,16 @@ import { useNavigate } from 'react-router-dom'
 import swal from 'sweetalert'
 import Loader from './Loader'
 
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
 const VendorSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
-  number: Yup.string().required('Contact Number is required'),
+  number: Yup.string()
+    .required('Contact number is required')
+    .matches(phoneRegExp, 'Contact number is not valid')
+    .min(10, 'to short')
+    .max(10, 'to long'),
 })
 
 const Registration = () => {

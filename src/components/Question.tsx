@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom'
 import { differenceInSeconds } from 'date-fns'
 import Waiting from './Waiting'
 import LogoutIcon from '@mui/icons-material/Logout'
+import { encode, decode } from 'js-base64'
 
 function Question() {
   const [currentGuess, setCurrentGuess] = useState('')
@@ -93,7 +94,7 @@ function Question() {
     )
       .then((response) => response.json())
       .then(async (result) => {
-        console.log('--------->', result)
+        // console.log('--------->', result)
         if (result && result?.length === 0) {
           setNoQuestion(true)
           // swal('No Question is available')
@@ -163,7 +164,7 @@ function Question() {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
+        // console.log(data)
 
         // setGuesses(JSON.parse(data?.data))
         // setAnswer(data?.answer)
