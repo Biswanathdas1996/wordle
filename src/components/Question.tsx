@@ -101,7 +101,7 @@ function Question() {
           // return
         }
 
-        const ifSubmited: any = await checkIfSuccessAttempt()
+        const ifSubmited: any = await checkIfSuccessAttempt(result[0]?.id)
 
         const currentQuestionId = localStorage.getItem('questionId')
         if (currentQuestionId && currentQuestionId !== result[0]?.id) {
@@ -140,13 +140,9 @@ function Question() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function checkIfSuccessAttempt() {
+  function checkIfSuccessAttempt(questionId: any) {
     const userId: any = localStorage.getItem('userId')
-    const questionId: any = localStorage.getItem('questionId')
-    if (!questionId || !userId) {
-      // window.location.reload()
-      return
-    }
+
     var formdata = new FormData()
     formdata.append('user_id', userId)
     formdata.append('question_id', questionId)
