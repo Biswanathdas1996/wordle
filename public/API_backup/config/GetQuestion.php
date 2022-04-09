@@ -14,8 +14,13 @@ include('query.php');
                         "id"=>'desc'
                     )     
      );
+     
+ 
+     
     $get_data=select('questions',$datas);
-
+    
+    // $get_data[0]['answer']=base64_encode($get_data[0]['answer']);
+  
 echo json_encode($get_data); 
  }
    

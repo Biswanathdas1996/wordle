@@ -31,13 +31,13 @@ date_default_timezone_set('Asia/Kolkata');
         $current_time= time();
         
         $new_start_time =date('Y-m-d H:i:s');
-        $new_end_time= date('Y-m-d H:i:s', strtotime('+5 minutes', strtotime($new_start_time)));
+        $new_end_time= date('Y-m-d H:i:s', strtotime('+3 minutes', strtotime($new_start_time)));
         if($_POST){
         $data=array(
             "data"=>array(
                      "status"=>1,
                      "start_time"=>$current_time,
-                     "end_time"=>$current_time+(60*5),
+                     "end_time"=>$current_time+(60*3.08),
                      "new_start_time"=>$new_start_time,
                      "new_end_time"=>$new_end_time,
                 )
