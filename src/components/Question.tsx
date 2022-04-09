@@ -20,7 +20,6 @@ import { useNavigate } from 'react-router-dom'
 import { differenceInSeconds } from 'date-fns'
 import Waiting from './Waiting'
 import LogoutIcon from '@mui/icons-material/Logout'
-import { encode, decode } from 'js-base64'
 
 function Question() {
   const [currentGuess, setCurrentGuess] = useState('')

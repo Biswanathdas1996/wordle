@@ -38,7 +38,7 @@ const LeaderBoard = () => {
   return (
     <>
       <Typography
-        style={{ marginLeft: '25px', marginTop: '10px', padding: 3 }}
+        style={{ marginLeft: '25px', padding: 3 }}
         component="h1"
         variant="h5"
         className="text-white "

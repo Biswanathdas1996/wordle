@@ -102,16 +102,19 @@ const Registration = () => {
   const renderer = ({ hours, minutes, seconds, completed }: any) => {
     if (completed) {
       // Render a completed state
-      return (
-        <h4 className="text-base leading-tight text-red-600 ">Times up!</h4>
-      )
+      return <b className="text-base leading-tight text-red-600 ">Times up!</b>
     } else {
       // Render a countdown
       return (
         <>
-          <h4 className="text-base leading-tight text-dark ">
-            <small>Time Remaining:</small> {minutes} <small>Minutes</small> -{' '}
-            {seconds} <small> Seconds</small>
+          <h4 className="text-base leading-tight text-green ">
+            <small>
+              Time Remaining:
+              <br />
+            </small>{' '}
+            <b>
+              {minutes} <small>min</small> : {seconds} <small> sec</small>
+            </b>
           </h4>
         </>
       )
@@ -160,7 +163,7 @@ const Registration = () => {
                             Question
                           </th>
 
-                          <th
+                          {/* <th
                             scope="col"
                             className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                           >
@@ -171,7 +174,7 @@ const Registration = () => {
                             className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
                           >
                             End Time
-                          </th>
+                          </th> */}
                           <th
                             scope="col"
                             className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
@@ -204,16 +207,16 @@ const Registration = () => {
                                   </button>
                                 </td>
 
-                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                {/* <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.new_start_time}
                                 </td>
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.new_end_time}
-                                </td>
+                                </td> */}
                                 <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                   {data?.status === '1' ? (
                                     <b style={{ color: 'green' }}>
-                                      Currently Active
+                                      {/* Currently Active */}
                                       <Countdown
                                         date={new Date(data?.end_time * 1000)}
                                         renderer={renderer}
